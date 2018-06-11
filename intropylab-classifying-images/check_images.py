@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # */AIPND/intropylab-classifying-images/check_images.py
 #                                                                             
-# TODO: 0. Fill in your information in the programming header below
+# DONE: 0. Fill in your information in the programming header below
 # PROGRAMMER: Michael Patini
 # DATE CREATED: 6/11/2018
 # REVISED DATE:             <=(Date Revised - if any)
@@ -32,13 +32,15 @@ from print_functions_for_lab_checks import *
 
 # Main program function defined below
 def main():
-    # TODO: 1. Define start_time to measure total program runtime by
+    # DONE: 1. Define start_time to measure total program runtime by
     # collecting start time
-    start_time = None
+    #sleep_value = int(input("Enter seconds to test: "))
+    start_time = time()
     
-    # TODO: 2. Define get_input_args() function to create & retrieve command
+    # DONE: 2. Define get_input_args() function to create & retrieve command
     # line arguments
     in_arg = get_input_args()
+    check_command_line_arguments(in_arg)
     
     # TODO: 3. Define get_pet_labels() function to create pet image labels by
     # creating a dictionary with key=filename and value=file label to be used
@@ -65,14 +67,18 @@ def main():
     # incorrect classifications of dogs and breeds if requested.
     print_results()
 
-    # TODO: 1. Define end_time to measure total program runtime
+    # DONE: 1. Define end_time to measure total program runtime
     # by collecting end time
-    end_time = None
+    #sleep(sleep_value)
+    end_time = time()
 
-    # TODO: 1. Define tot_time to computes overall runtime in
+    # DONE: 1. Define tot_time to computes overall runtime in
     # seconds & prints it in hh:mm:ss format
-    tot_time = None
-    print("\n** Total Elapsed Runtime:", tot_time)
+    tot_time = end_time - start_time
+    hours = int(tot_time / 3600)
+    minutes = int((tot_time % 3600) / 60)
+    seconds = round((tot_time % 3600) % 60)
+    print("\n** Total Elapsed Runtime: {}:{}:{}.".format(hours, minutes, seconds))
 
 
 
@@ -98,8 +104,14 @@ def get_input_args():
     Returns:
      parse_args() -data structure that stores the command line arguments object  
     """
-    pass
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir', type = str, default = 'pet_images/',
+                        help = 'Path to the image_folder')
+    parser.add_argument('--arch', type = str, default = 'vgg',
+                        help = 'CCN model architecture for image classification')     
+    parser.add_argument('--dogfile', type = str, default = 'dognames.txt',
+                        help = 'Name of file that contains dog labels')
+    return parser.parse_args()
 
 def get_pet_labels():
     """
