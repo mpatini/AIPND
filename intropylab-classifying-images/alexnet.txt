@@ -1,0 +1,13 @@
+
+Model: alexnet
+
+Number of images: 40
+Number of dog-images: 30
+Number of not-dog-images: 10
+% Correct dogs: 100.0
+% Correct breed: 80.0
+% Correct not-dog: 100.0
+% Match label: 75.0
+
+
+** Total Elapsed Runtime: 0:0:2.

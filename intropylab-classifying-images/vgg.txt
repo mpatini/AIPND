@@ -1,0 +1,13 @@
+
+Model: vgg
+
+Number of images: 40
+Number of dog-images: 30
+Number of not-dog-images: 10
+% Correct dogs: 100.0
+% Correct breed: 93.33333333333333
+% Correct not-dog: 100.0
+% Match label: 87.5
+
+
+** Total Elapsed Runtime: 0:0:14.

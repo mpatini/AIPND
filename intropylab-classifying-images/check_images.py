@@ -306,7 +306,6 @@ def calculates_results_stats(results_dic):
     if D > 0:
         results_stats["pct_correct_non_dogs"] = C/D * 100
     results_stats["pct_label_matches"] = Y/Z * 100
-
     results_stats['n_images'] = Z
     results_stats['n_dogs_img'] = B
     results_stats['n_notdogs_img'] = Z - B
@@ -352,7 +351,7 @@ def print_results(results_dic, results_stats, model,
     Returns:
            None - simply printing results.
     """    
-    result_string ="""\nNumber of images: {}\nNumber of dog-images: {}\nNumber of not-dog-images: {}\n% Correct dogs: {}\n% Correct breed: {}\n% Correct not-dog: {}\n"""
+    result_string ="""\nNumber of images: {}\nNumber of dog-images: {}\nNumber of not-dog-images: {}\n% Correct dogs: {}\n% Correct breed: {}\n% Correct not-dog: {}\n% Match label: {}\n"""
     print("\nModel: {}".format(model))
     print(result_string.format(
     results_stats['n_images'],
@@ -360,7 +359,8 @@ def print_results(results_dic, results_stats, model,
     results_stats['n_notdogs_img'],
     results_stats['pct_correct_dogs'],
     results_stats['pct_correct_breed'],
-    results_stats['pct_correct_notdogs'])
+    results_stats['pct_correct_notdogs'],
+    results_stats["pct_label_matches"])
     )
     # print incorrect dogs
     if print_incorrect_dogs and ((results_stats['n_correct_dogs'] + results_stats['n_correct_notdogs']) != results_stats['n_images']):

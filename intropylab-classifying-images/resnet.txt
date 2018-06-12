@@ -1,0 +1,13 @@
+
+Model: resnet
+
+Number of images: 40
+Number of dog-images: 30
+Number of not-dog-images: 10
+% Correct dogs: 100.0
+% Correct breed: 90.0
+% Correct not-dog: 90.0
+% Match label: 82.5
+
+
+** Total Elapsed Runtime: 0:0:3.
