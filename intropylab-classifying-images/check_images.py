@@ -60,20 +60,22 @@ def main():
     results_dic = classify_images(in_args.dir, answers_dic, in_args.arch)
     #check_classifying_images(results_dic)
     
-    # TODO: 5. Define adjust_results4_isadog() function to adjust the results
+    # DONE: 5. Define adjust_results4_isadog() function to adjust the results
     # dictionary(result_dic) to determine if classifier correctly classified
     # images as 'a dog' or 'not a dog'. This demonstrates if the model can
     # correctly classify dog images as dogs (regardless of breed)
     adjust_results4_isadog(results_dic, in_args.dogfile)
+    #check_classifying_labels_as_dogs(results_dic)
 
-    # TODO: 6. Define calculates_results_stats() function to calculate
+    # DONE: 6. Define calculates_results_stats() function to calculate
     # results of run and puts statistics in a results statistics
     # dictionary (results_stats_dic)
-    results_stats_dic = calculates_results_stats()
+    results_stats = calculates_results_stats(results_dic)
+    #check_calculating_results(results_dic, results_stats)
 
-    # TODO: 7. Define print_results() function to print summary results, 
+    # DONE: 7. Define print_results() function to print summary results, 
     # incorrect classifications of dogs and breeds if requested.
-    print_results()
+    print_results(results_dic, results_stats, in_args.arch, in_args.incorrectdog, in_args.incorrectbreed)
 
     # DONE: 1. Define end_time to measure total program runtime
     # by collecting end time
@@ -119,6 +121,10 @@ def get_input_args():
                         help = 'CCN model architecture for image classification')     
     parser.add_argument('--dogfile', type = str, default = 'dognames.txt',
                         help = 'Name of file that contains dog labels')
+    parser.add_argument('--incorrectdog', type = bool, default = False,
+                        help = 'Print animals inccorectly classified as dogs, type True or False')
+    parser.add_argument('--incorrectbreed', type = bool, default = False,
+                        help = 'Print dogs classified as the wrong breed, type True of False')
     return parser.parse_args()
 
 def get_pet_labels(img_dir):
@@ -244,10 +250,20 @@ def adjust_results4_isadog(results_dic, dogsfile):
                 dognames_dic[line] = 1
             else:
                 print("Warning, {} already in dictionary.".format(line))  
-    print(dognames_dic)
+    for dog_filename, result_list in results_dic.items():
+        # conditional for pet label is a dog
+        if result_list[0] in dognames_dic:
+            result_list.append(1)
+        else:
+            result_list.append(0)
+        # conditional for classifier label is a dog
+        if result_list[1] in dognames_dic:
+            result_list.append(1)
+        else:
+            result_list.append(0)
 
 
-def calculates_results_stats():
+def calculates_results_stats(results_dic):
     """
     Calculates statistics of the results of the run using classifier's model 
     architecture on classifying images. Then puts the results statistics in a 
@@ -271,10 +287,43 @@ def calculates_results_stats():
                      name (starting with 'pct' for percentage or 'n' for count)
                      and the value is the statistic's value 
     """
-    pass
+    results_stats = dict()
+    A, B, C, D, E, Y = 0, 0, 0, 0, 0, 0
+    Z = len(results_dic)
+    for filename, result_list in results_dic.items():
+        if result_list[3] == result_list[4] == 1:
+            A += 1
+        if result_list[3] == 1:
+            B += 1
+        if result_list[3] == result_list[4] == 0:
+            C += 1
+        if result_list[3] == 0:
+            D += 1
+        if result_list[3] == result_list[2] == 1:
+            E += 1
+        if result_list[2] == 1:
+            Y += 1
+    if D > 0:
+        results_stats["pct_correct_non_dogs"] = C/D * 100
+    results_stats["pct_label_matches"] = Y/Z * 100
+
+    results_stats['n_images'] = Z
+    results_stats['n_dogs_img'] = B
+    results_stats['n_notdogs_img'] = Z - B
+    results_stats['n_correct_dogs'] = A
+    results_stats['pct_correct_dogs'] = A/B * 100
+    results_stats['n_correct_breed'] = E
+    results_stats['pct_correct_breed'] = E/B * 100
+    results_stats['n_correct_notdogs'] = C
+    if D > 0:
+        results_stats['pct_correct_notdogs'] = C/D * 100
+    else:
+        results_stats['pct_correct_notdogs'] = 0.0
+    return results_stats
 
 
-def print_results():
+def print_results(results_dic, results_stats, model,
+                  print_incorrect_dogs=False, print_incorrect_breed=False):
     """
     Prints summary results on the classification and then prints incorrectly 
     classified dogs and incorrectly classified dog breeds if user indicates 
@@ -303,9 +352,30 @@ def print_results():
     Returns:
            None - simply printing results.
     """    
-    pass
+    result_string ="""\nNumber of images: {}\nNumber of dog-images: {}\nNumber of not-dog-images: {}\n% Correct dogs: {}\n% Correct breed: {}\n% Correct not-dog: {}\n"""
+    print("\nModel: {}".format(model))
+    print(result_string.format(
+    results_stats['n_images'],
+    results_stats['n_dogs_img'],
+    results_stats['n_notdogs_img'],
+    results_stats['pct_correct_dogs'],
+    results_stats['pct_correct_breed'],
+    results_stats['pct_correct_notdogs'])
+    )
+    # print incorrect dogs
+    if print_incorrect_dogs and ((results_stats['n_correct_dogs'] + results_stats['n_correct_notdogs']) != results_stats['n_images']):
+        print("\nPrinting incorrect dogs:\n")
+        for filename, result_list in results_dic.items():
+            if sum(result_list[3:]) == 1:
+                print("Pet_label: {} does not equal Classifier label: {}".format(result_list[0], result_list[1]))
 
-                
+
+    # print incorrect breeds
+    if print_incorrect_breed and (results_stats['n_correct_dogs'] != results_stats['n_correct_breed']):
+        print("\nPrinting incorrect breeds:\n")
+        for filename, result_list in results_dic.items():
+            if sum(result_list[3:]) == 2 and result_list[2] == 0:
+                print("(Pet_label {}) does not equal (Classifier label {})".format(result_list[0], result_list[1]))
                 
 # Call to main function to run the program
 if __name__ == "__main__":
