@@ -64,7 +64,7 @@ def main():
     # dictionary(result_dic) to determine if classifier correctly classified
     # images as 'a dog' or 'not a dog'. This demonstrates if the model can
     # correctly classify dog images as dogs (regardless of breed)
-    adjust_results4_isadog()
+    adjust_results4_isadog(results_dic, in_args.dogfile)
 
     # TODO: 6. Define calculates_results_stats() function to calculate
     # results of run and puts statistics in a results statistics
@@ -115,7 +115,7 @@ def get_input_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir', type = str, default = 'pet_images/',
                         help = 'Path to the image_folder')
-    parser.add_argument('--arch', type = str, default = 'vgg',
+    parser.add_argument('--arch', type = str, default = 'resnet',
                         help = 'CCN model architecture for image classification')     
     parser.add_argument('--dogfile', type = str, default = 'dognames.txt',
                         help = 'Name of file that contains dog labels')
@@ -184,30 +184,31 @@ def classify_images(img_dir, petlabel_dic, model):
     results_dic = dict()
     for key in petlabel_dic:
         #print("\n{}: ".format(filename))
-        img_path = img_dir + key
         pet_label = petlabel_dic[key]
-        classifier_label = classifier(img_path, model).lower().strip()
+        classifier_label = classifier(img_dir+key, model).lower().strip()
         found_idx = classifier_label.find(pet_label)
-        if classifier_label.find(","):
-            if ((found_idx == 0) or (classifier_label[found_idx - 1] == " ")
-               and
-               ((found_idx + len(pet_label) == len(classifier_label)) or   
-               (classifier_label[found_idx + len(pet_label) + 1] == " ")
-               or 
-               (classifier_label[found_idx + len(pet_label) + 1] == ","))):
-                result = 1
-            else:
-                result = 0
-        else:
-            if pet_label in classifier_label and found_idx == 0 and len(pet_label) == len(classifier_label):
-                result = 1
-            else:
-                result = 0
-        results_dic[key] = [pet_label, classifier_label, result]
+        results_dic[key] = [pet_label, classifier_label,
+                            is_true_match(found_idx, classifier_label,                        pet_label)]
     return results_dic
 
+def is_true_match(found_idx, classifier_label, pet_label):
+    """
+    Returns if true match found between classifier function and pet_label.
+    Else returns 0.
+    """
+    if classifier_label.find(","):
+        if (found_idx == 0 or classifier_label[found_idx - 1] == " ") and (found_idx + len(pet_label) == len(classifier_label) or classifier_label[found_idx + len(pet_label) + 1] in (" ",",")):
+            return 1
+        else:
+            return 0
+    elif (pet_label in classifier_label) and (found_idx == 0) and (len(pet_label) == len(classifier_label)):
+        return 1
+    else:
+        return 0
 
-def adjust_results4_isadog():
+
+
+def adjust_results4_isadog(results_dic, dogsfile):
     """
     Adjusts the results dictionary to determine if classifier correctly 
     classified images 'as a dog' or 'not a dog' especially when not a match. 
@@ -234,8 +235,16 @@ def adjust_results4_isadog():
                 text file's name)
     Returns:
            None - results_dic is mutable data type so no return needed.
-    """           
-    pass
+    """    
+    dognames_dic = dict()
+    with open(dogsfile, 'r') as dogs_list:
+        for line in dogs_list:
+            line = line.rstrip()
+            if line not in dognames_dic:
+                dognames_dic[line] = 1
+            else:
+                print("Warning, {} already in dictionary.".format(line))  
+    print(dognames_dic)
 
 
 def calculates_results_stats():
