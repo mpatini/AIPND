@@ -181,12 +181,11 @@ def classify_images(img_dir, petlabel_dic, model):
                     idx 2 = 1/0 (int)   where 1 = match between pet image and 
                     classifer labels and 0 = no match between labels
     """
-    filename_list = listdir(img_dir)
     results_dic = dict()
-    for filename in filename_list:
+    for key in petlabel_dic:
         #print("\n{}: ".format(filename))
-        img_path = img_dir + filename
-        pet_label = petlabel_dic[filename]
+        img_path = img_dir + key
+        pet_label = petlabel_dic[key]
         classifier_label = classifier(img_path, model).lower().strip()
         found_idx = classifier_label.find(pet_label)
         if classifier_label.find(","):
@@ -204,7 +203,7 @@ def classify_images(img_dir, petlabel_dic, model):
                 result = 1
             else:
                 result = 0
-        results_dic[filename] = [pet_label, classifier_label, result]
+        results_dic[key] = [pet_label, classifier_label, result]
     return results_dic
 
 
