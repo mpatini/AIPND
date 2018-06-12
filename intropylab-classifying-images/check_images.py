@@ -39,13 +39,20 @@ def main():
     
     # DONE: 2. Define get_input_args() function to create & retrieve command
     # line arguments
-    in_arg = get_input_args()
-    check_command_line_arguments(in_arg)
+    in_args = get_input_args()
+        #check_command_line_arguments(in_args)
     
-    # TODO: 3. Define get_pet_labels() function to create pet image labels by
+    # DONE: 3. Define get_pet_labels() function to create pet image labels by
     # creating a dictionary with key=filename and value=file label to be used
     # to check the accuracy of the classifier function
-    answers_dic = get_pet_labels()
+    answers_dic = get_pet_labels(in_args.dir)
+        """ #testing code
+        check_creating_pet_image_labels(answers_dic)
+        for key, value in answers_dic.items():
+            if key[0] == ".":
+                print(str((key, value)) + "\n")
+        """
+            
 
     # TODO: 4. Define classify_images() function to create the classifier 
     # labels with the classifier function uisng in_arg.arch, comparing the 
@@ -113,7 +120,7 @@ def get_input_args():
                         help = 'Name of file that contains dog labels')
     return parser.parse_args()
 
-def get_pet_labels():
+def get_pet_labels(img_dir):
     """
     Creates a dictionary of pet labels based upon the filenames of the image 
     files. Reads in pet filenames and extracts the pet image labels from the 
@@ -126,7 +133,26 @@ def get_pet_labels():
      petlabels_dic - Dictionary storing image filename (as key) and Pet Image
                      Labels (as value)  
     """
-    pass
+    filename_list = listdir(img_dir)
+    """ #test code for listdir
+    print("\nPrints 10 filenames from folder pet_images/")
+    for idx in range(0, 10, 1):
+        print("{} file: {}".format(idx + 1, filename_list[idx]))
+    print(len(filename_list))
+    """
+    pet_labels_dic = dict()
+    for filename in filename_list:
+        word_list_pet_image = filename.lower().split("_")
+        pet_label = ""
+        for word in word_list_pet_image:
+            if word.isalpha():
+                pet_label += word + " "
+        pet_label = pet_label.strip()
+        if filename not in pet_labels_dic:
+            pet_labels_dic[filename] = pet_label
+        else:
+            "Alert: {} already in pet_labels_dic".format(filename)
+    return pet_labels_dic
 
 
 def classify_images():
