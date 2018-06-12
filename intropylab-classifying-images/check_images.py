@@ -54,11 +54,11 @@ def main():
     """
             
 
-    # TODO: 4. Define classify_images() function to create the classifier 
+    # DONE: 4. Define classify_images() function to create the classifier 
     # labels with the classifier function uisng in_arg.arch, comparing the 
     # labels, and creating a dictionary of results (result_dic)
     results_dic = classify_images(in_args.dir, answers_dic, in_args.arch)
-    check_classifying_images(results_dic)
+    #check_classifying_images(results_dic)
     
     # TODO: 5. Define adjust_results4_isadog() function to adjust the results
     # dictionary(result_dic) to determine if classifier correctly classified
